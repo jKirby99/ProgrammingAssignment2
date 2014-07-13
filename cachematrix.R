@@ -1,7 +1,32 @@
-## Put comments here that give an overall description of what your
-## functions do
+## makeCacheMatrix: create list with functions to 
+## cache matrix/inverse matrix
+## cacheSolve: rerurns inverse matrix from cache 
+## or computes (with solve()) and caches inverse matrix
+##
+## example usage
+## > zy<-makeCacheMatrix()
+## > zx<-as.matrix(c(1, 2, 3,4))
+## > dim(zx)<-c(2,2)
+## > zx
+## [,1] [,2]
+## [1,]    1    3
+## [2,]    2    4
+## > zy$set(zx)
+## > zy$get()
+## [,1] [,2]
+## [1,]    1    3
+## [2,]    2    4
+## > cacheSolve(zy)
+## [,1] [,2]
+## [1,]   -2  1.5
+## [2,]    1 -0.5
+## > cacheSolve(zy)
+## getting cached data
+## [,1] [,2]
+## [1,]   -2  1.5
+## [2,]    1 -0.5
 
-## makeCacheeMatrix is a function that creates a list
+## makeCacheMatrix is a function that creates a list
 ## of functions that are used with caching the inverse
 ## of a matrix to reduce the computational load for 
 ## matrices that will used multiple times.
@@ -36,6 +61,9 @@ makeCacheMatrix <- function(x = matrix()) {
 
 cacheSolve <- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
+
+  ## m is the local copy of the inverse matrix that may have 
+  ## been previously cached for matrix "x"
   m <- x$getinverse()
 
   ## If the inverse matrix has been previously computed, return the
@@ -47,12 +75,17 @@ cacheSolve <- function(x, ...) {
     return(m)
   }
 
-  ## If the inverse of matrix "x" has not been computed, use the solve()
-  ## function to compute the inverse matrix and cache it for further 
-  ## use. 
-
+  ## get the matrix and set "data" to the matrix.
   data <- x$get()
+  
+  ## If the inverse of matrix "x" has not been computed, use the solve()
+  ## function to compute the inverse matrix a  
+  ## note: solve(a, b, ...), If missing, b is taken to be an identity matrix 
+  ## and solve will return the inverse of a.
   m <- solve(data)
+
+  ## cache m for further use. m is the local value of the inverse matrix 
+  ## m will be cached by invoking the setinverse function.
   x$setinverse(m)
   m
 }
